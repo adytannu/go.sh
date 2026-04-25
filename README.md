@@ -5,7 +5,7 @@ Public bootstrap for a new Linux or macOS machine.
 Run it from a new machine with:
 
 ```sh
-curl -fsSL https://tannu.me/go.sh | bash
+curl -fsSL https://tannu.me | bash
 ```
 
 With explicit Git identity:
@@ -49,7 +49,7 @@ curl -fsSL https://tannu.me/go.sh | INSTALL_PACKAGES=0 OMB_THEME=powerline bash
 For the shortest clean command, use the apex domain:
 
 ```sh
-curl -fsSL https://tannu.me/go.sh | bash
+curl -fsSL https://tannu.me | bash
 ```
 
 A `www` or dedicated subdomain is usually operationally simpler:
