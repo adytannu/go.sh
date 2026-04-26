@@ -105,9 +105,14 @@ replace_assignment() {
   [ -f "$file" ] || return 0
   tmp="$(mktemp)"
   awk -v name="$name" -v line="$line" '
+    skipping {
+      if ($0 ~ /^[[:space:]]*\)[[:space:]]*($|#)/) skipping = 0
+      next
+    }
     $0 ~ "^" name "=" {
       if (!done) print line
       done = 1
+      if ($0 ~ /\(/ && $0 !~ /\)/) skipping = 1
       next
     }
     { print }
