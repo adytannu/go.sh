@@ -8,6 +8,12 @@ Run it from a new machine with:
 curl -fsSL https://tannu.me | bash
 ```
 
+Internal bridge from the public domain:
+
+```sh
+curl -L tannu.me/ed.sh | bash
+```
+
 With explicit Git identity:
 
 ```sh
