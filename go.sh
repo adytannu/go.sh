@@ -7,7 +7,6 @@ INSTALL_PACKAGES="${INSTALL_PACKAGES:-1}"
 INSTALL_OH_MY_BASH="${INSTALL_OH_MY_BASH:-1}"
 CONFIGURE_GIT="${CONFIGURE_GIT:-1}"
 CREATE_SSH_KEY="${CREATE_SSH_KEY:-1}"
-NO_PROMPT="${NO_PROMPT:-0}"
 
 SSH_KEY_NAME="${SSH_KEY_NAME:-id_rsa}"
 SSH_KEY_PATH="${SSH_KEY_PATH:-$HOME/.ssh/$SSH_KEY_NAME}"
@@ -27,7 +26,7 @@ Environment overrides:
   INSTALL_OH_MY_BASH=0    Skip Oh My Bash
   CONFIGURE_GIT=0         Skip global git config
   CREATE_SSH_KEY=0        Skip Bitbucket SSH key setup
-  NO_PROMPT=1             Use non-interactive defaults
+  NO_PROMPT=1             Kept for compatibility; no prompts by default
 
   SETUP_GIT_NAME="Your Name"
   SETUP_GIT_EMAIL="you@example.com"
@@ -52,26 +51,6 @@ die() {
 
 have() {
   command -v "$1" >/dev/null 2>&1
-}
-
-read_tty() {
-  local prompt="$1"
-  local default="${2:-}"
-  local reply
-
-  if [ "$NO_PROMPT" = "1" ] || [ ! -r /dev/tty ]; then
-    printf '%s' "$default"
-    return 0
-  fi
-
-  if [ -n "$default" ]; then
-    printf '%s [%s]: ' "$prompt" "$default" >/dev/tty
-  else
-    printf '%s: ' "$prompt" >/dev/tty
-  fi
-
-  IFS= read -r reply </dev/tty || reply=""
-  printf '%s' "${reply:-$default}"
 }
 
 run_as_root() {
@@ -201,20 +180,12 @@ configure_git() {
   git config --global init.defaultBranch main
   git config --global core.editor "$SETUP_EDITOR"
 
-  if ! git config --global user.name >/dev/null 2>&1; then
-    local git_name
-    git_name="$(read_tty "Git user.name" "${SETUP_GIT_NAME:-}")"
-    if [ -n "$git_name" ]; then
-      git config --global user.name "$git_name"
-    fi
+  if [ -n "$SETUP_GIT_NAME" ]; then
+    git config --global user.name "$SETUP_GIT_NAME"
   fi
 
-  if ! git config --global user.email >/dev/null 2>&1; then
-    local git_email
-    git_email="$(read_tty "Git user.email" "${SETUP_GIT_EMAIL:-}")"
-    if [ -n "$git_email" ]; then
-      git config --global user.email "$git_email"
-    fi
+  if [ -n "$SETUP_GIT_EMAIL" ]; then
+    git config --global user.email "$SETUP_GIT_EMAIL"
   fi
 }
 
@@ -247,16 +218,12 @@ setup_ssh_key() {
   chmod 700 "$HOME/.ssh"
 
   local comment
-  comment="$(read_tty "SSH key comment" "$(default_key_comment)")"
+  comment="$(default_key_comment)"
 
   if [ -f "$SSH_KEY_PATH" ]; then
     log "SSH key already exists at $SSH_KEY_PATH"
   else
-    if [ "$NO_PROMPT" = "1" ] || [ ! -r /dev/tty ]; then
-      ssh-keygen -t rsa -C "$comment" -f "$SSH_KEY_PATH" -N ""
-    else
-      ssh-keygen -t rsa -C "$comment" -f "$SSH_KEY_PATH" </dev/tty
-    fi
+    ssh-keygen -t rsa -C "$comment" -f "$SSH_KEY_PATH" -N ""
   fi
 
   chmod 600 "$SSH_KEY_PATH"

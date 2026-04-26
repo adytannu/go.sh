@@ -23,12 +23,14 @@ INSTALL_PACKAGES=0      # skip package manager installs
 INSTALL_OH_MY_BASH=0    # skip Oh My Bash
 CONFIGURE_GIT=0         # skip git config
 CREATE_SSH_KEY=0        # skip SSH key setup
-NO_PROMPT=1             # non-interactive defaults
+NO_PROMPT=1             # kept for compatibility; no prompts by default
 
 SSH_KEY_NAME=id_rsa
 OMB_THEME=font
 OMB_PLUGINS=git
 SETUP_EDITOR=vim
+SETUP_GIT_NAME="Your Name"      # optional; no prompt if omitted
+SETUP_GIT_EMAIL="you@example.com" # optional; no prompt if omitted
 ```
 
 Example:
